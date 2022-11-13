@@ -7,6 +7,11 @@ from post.models import Post
 
 
 class PostSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name='post:detail',
+        lookup_field='slug'
+    )
+
     class Meta:
         model = Post
         fields = [
@@ -14,7 +19,7 @@ class PostSerializer(serializers.ModelSerializer):
             'title',
             'content',
             'image',
-            'slug',
+            'url',
             'created',
             'modified_by',
         ]
@@ -28,4 +33,3 @@ class PostUpdateCreateSerializer(serializers.ModelSerializer):
             'content',
             'image',
         ]
-
