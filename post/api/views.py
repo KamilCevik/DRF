@@ -1,10 +1,11 @@
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView, DestroyAPIView, CreateAPIView
 from post.models import Post
-from post.api.serializers import PostSerializer, PostUpdateCreateSerializer,PostDetailSerializer
+from post.api.serializers import PostSerializer, PostUpdateCreateSerializer, PostDetailSerializer
 from rest_framework.permissions import IsAuthenticated
 from post.api.permissions import IsOwner
 from post.api.paginations import PostPagination
+from rest_framework.mixins import DestroyModelMixin
 
 
 class PostListAPIView(ListAPIView):
@@ -15,7 +16,7 @@ class PostListAPIView(ListAPIView):
 
     def get_queryset(self):
         queryset = Post.objects.filter(draft=False)
-        return queryset
+        return queryset.order_by('-modified')
 
 
 class PostDetailAPIView(RetrieveAPIView):
@@ -24,14 +25,7 @@ class PostDetailAPIView(RetrieveAPIView):
     lookup_field = 'slug'
 
 
-class PostDeleteAPIView(DestroyAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-    lookup_field = 'slug'
-    permission_classes = [IsOwner]
-
-
-class PostUpdateAPIView(RetrieveUpdateAPIView):
+class PostUpdateAPIView(RetrieveUpdateAPIView, DestroyModelMixin):
     queryset = Post.objects.all()
     serializer_class = PostUpdateCreateSerializer
     lookup_field = 'slug'
@@ -39,6 +33,9 @@ class PostUpdateAPIView(RetrieveUpdateAPIView):
 
     def perform_update(self, serializer):
         serializer.save(modified_by=self.request.user)
+
+    def delete(self, requset, *args, **kwargs):
+        return self.destroy(requset, *args, **kwargs)
 
 
 class PostCreateAPIView(CreateAPIView):
