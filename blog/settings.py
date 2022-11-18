@@ -17,16 +17,19 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-"""REST_FRAMEWORK = {
+REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+    'DEFAULT_THROTTLE_RATES': {
+        'registerthrottle': '5/hour',
+    }
 }
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15)
 }
-"""
+
 
 # Application definition
 
